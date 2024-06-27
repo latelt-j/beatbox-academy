@@ -1,8 +1,10 @@
 <template>
   <div class="root">
+    <canvas id="myCanvas" width="300" height="300"></canvas>
     <button class="player" @click="readAudio('capuche')">LA CAPUCHE 🥷</button>
     <button class="player" @click="readAudio('biscotte')">PETITE BISCOTTE 🍞</button>
     <button class="player" @click="readAudio('prochainement')">PROCHAINEMENT ⌛</button>
+    <canvas ref="canvas" width="800" height="400"></canvas>
   </div>
 </template>
 
@@ -15,18 +17,57 @@ export default {
   name: 'App',
   data() {
     return {
-      currentAudio: null
+      audioContext: new (window.AudioContext || window.webkitAudioContext)(),
+      currentAudio: null,
+      analyser: null,
+      dataArray: null,
+      requestId: null,
     };
   },
   methods: {
-    readAudio(audioKey) {
-      // Stop the current audio if it is playing
+    initAudio(selectedAudio) {
+      // Check if an audio object is already playing, if so, stop and reset
       if (this.currentAudio && !this.currentAudio.paused) {
         this.currentAudio.pause();
-        this.currentAudio.currentTime = 0; // Optionally reset the audio position
+        this.currentAudio.currentTime = 0;
       }
-
-      // Select the appropriate audio file
+      this.currentAudio = new Audio(selectedAudio);
+      const track = this.audioContext.createMediaElementSource(this.currentAudio);
+      this.analyser = this.audioContext.createAnalyser();
+      track.connect(this.analyser);
+      this.analyser.connect(this.audioContext.destination);
+      this.analyser.fftSize = 2048;
+      this.dataArray = new Uint8Array(this.analyser.fftSize);
+      this.draw();
+      this.currentAudio.play();
+    },
+    draw() {
+      const canvas = this.$refs.canvas;
+      const ctx = canvas.getContext('2d');
+      const width = canvas.width;
+      const height = canvas.height;
+      this.requestId = requestAnimationFrame(this.draw);
+      ctx.clearRect(0, 0, width, height);
+      this.analyser.getByteTimeDomainData(this.dataArray);
+      ctx.lineWidth = 2;
+      ctx.strokeStyle = 'rgb(57, 255, 20)'; // Un vert néon lumineux
+      ctx.beginPath();
+      const sliceWidth = width * 1.0 / this.dataArray.length;
+      let x = 0;
+      for (let i = 0; i < this.dataArray.length; i++) {
+        const v = this.dataArray[i] / 128.0;
+        const y = v * height / 2;
+        if (i === 0) {
+          ctx.moveTo(x, y);
+        } else {
+          ctx.lineTo(x, y);
+        }
+        x += sliceWidth;
+      }
+      ctx.lineTo(canvas.width, canvas.height / 2);
+      ctx.stroke();
+    },
+    readAudio(audioKey) {
       let selectedAudio;
       switch (audioKey) {
         case 'capuche':
@@ -39,13 +80,22 @@ export default {
           selectedAudio = audio3;
           break;
         default:
-          selectedAudio = audio1; // Default case if needed
+          selectedAudio = audio1;
       }
-
-      // Create a new audio object and play it
-      this.currentAudio = new Audio(selectedAudio);
-      this.currentAudio.play();
+      this.initAudio(selectedAudio);
     }
+  },
+  mounted() {
+    // this.initAudio(); No default audio to play
+  },
+  beforeDestroy() {
+    if (this.requestId) {
+      cancelAnimationFrame(this.requestId);
+    }
+    if (this.currentAudio) {
+      this.currentAudio.pause();
+    }
+    this.audioContext.close();
   }
 }
 </script>
