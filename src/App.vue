@@ -1,9 +1,24 @@
 <template>
   <div class="root">
+    <div class="header">
+      <img src="./assets/subtitle.png" class="subtitle" />
+      <img src="./assets/title.png" class="title" />
+    </div>
     <canvas id="myCanvas" width="300" height="300"></canvas>
-    <button class="player" @click="readAudio('capuche')">LA CAPUCHE 🥷</button>
-    <button class="player" @click="readAudio('biscotte')">PETITE BISCOTTE 🍞</button>
-    <button class="player" @click="readAudio('prochainement')">PROCHAINEMENT ⌛</button>
+    <div class="player-block">
+      <button class="player" @click="readAudio('capuche')">
+        <img class="img-sound" src="./assets/hood-img.png" />
+        <img class="title-sound" src="./assets/hood.png" />
+      </button>
+      <button class="player" @click="readAudio('biscotte')">
+        <img class="img-sound" src="./assets/biscotte-img.png" />
+        <img class="title-sound" src="./assets/biscotte.png" />
+      </button>
+      <button class="player" @click="readAudio('prochainement')">
+        <img class="img-sound" src="./assets/soon-img.png"  />
+        <img class="title-sound" src="./assets/upcoming.png" />
+      </button>
+    </div>
     <canvas ref="canvas" width="800" height="400"></canvas>
   </div>
 </template>
