@@ -19,7 +19,7 @@
         <img class="title-sound" src="./assets/upcoming.png" />
       </button>
     </div>
-    <canvas ref="canvas" width="800" height="400"></canvas>
+    <canvas class="test" ref="canvas"></canvas>
   </div>
 </template>
 
