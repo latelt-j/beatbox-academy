@@ -14,6 +14,10 @@
         <img class="img-sound" src="./assets/biscotte-img.png" />
         <img class="title-sound" src="./assets/biscotte.png" />
       </button>
+      <button class="player" @click="readAudio('cape')">
+        <img class="img-sound" src="./assets/cape-img.png"  />
+        <img class="title-sound" src="./assets/cape.png" />
+      </button>
       <button class="player" @click="readAudio('prochainement')">
         <img class="img-sound" src="./assets/soon-img.png"  />
         <img class="title-sound" src="./assets/upcoming.png" />
@@ -27,6 +31,7 @@
 import audio1 from "./assets/pause-ta-capuche.m4a";
 import audio2 from "./assets/petite-biscotte.m4a";
 import audio3 from "./assets/prochainement.m4a";
+import audio4 from "./assets/cape.m4a";
 
 export default {
   name: 'App',
@@ -93,6 +98,9 @@ export default {
           break;
         case 'prochainement':
           selectedAudio = audio3;
+          break;
+        case 'cape':
+          selectedAudio = audio4;
           break;
         default:
           selectedAudio = audio1;
